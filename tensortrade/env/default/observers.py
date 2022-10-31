@@ -446,7 +446,7 @@ class IntradayObserver(Observer):
         """
         return self.feed.has_next() and not self.stop
 
-    def reset(self) -> None:
+    def reset(self,random_start=0) -> None:
         """Resets the observer"""
         self.renderer_history = []
         self.history.reset()

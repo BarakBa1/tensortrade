@@ -50,7 +50,7 @@ class Quantity:
         Raised if the `size` of the quantity being created is negative.
     """
 
-    def __init__(self, instrument: 'Instrument', size: Decimal, path_id: str = None, allow_negative=False):
+    def __init__(self, instrument: 'Instrument', size: Decimal, path_id: str = None, allow_negative=True):
         if size < 0 and not allow_negative:
             if abs(size) > Decimal(10)**(-instrument.precision):
                 raise InvalidNegativeQuantity(float(size))
