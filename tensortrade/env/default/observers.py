@@ -333,6 +333,7 @@ class IntradayObserver(Observer):
                  feed: 'DataFeed' = None,
                  renderer_feed: 'DataFeed' = None,
                  stop_time: 'datetime.time' = dt.time(16, 0, 0),
+                 start_time: 'datetime.time' = dt.time(16, 0, 0),
                  window_size: int = 1,
                  min_periods: int = None,
                  randomize: bool = False,
@@ -355,6 +356,7 @@ class IntradayObserver(Observer):
             ])
 
         self.stop_time = stop_time
+        self.start_time = start_time
         self.window_size = window_size
         self.min_periods = min_periods
         self.randomize = randomize
@@ -457,9 +459,7 @@ class IntradayObserver(Observer):
             
             if (self.feed.has_next()):
                 ts = self.feed.next()["external"]
-                if (ts["timestamp"].time() == self.stop_time):
-                    if not (self.feed.has_next()):      # make sure its not the last ts of the df
-                        self.feed.reset()
+                if (ts["timestamp"].time() == self.start_time):
                     break
             
             else:
