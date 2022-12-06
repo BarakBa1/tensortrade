@@ -380,12 +380,12 @@ class IntradayObserver(Observer):
 
         self.renderer_history = []
 
-        if self.randomize:
-            self.num_episodes = 0
-            while self.feed.has_next():
-                ts = self.feed.next()["external"]["timestamp"]
-                if ts.time() == self.stop_time:
-                    self.num_episodes += 1
+        # if self.randomize:
+        #     self.num_episodes = 0
+        #     while self.feed.has_next():
+        #         ts = self.feed.next()["external"]["timestamp"]
+        #         if ts.time() == self.stop_time:
+        #             self.num_episodes += 1
 
         self.feed.reset()
         self.warmup()
@@ -450,15 +450,30 @@ class IntradayObserver(Observer):
         """Resets the observer"""
         self.renderer_history = []
         self.history.reset()
-
-        if self.randomize or not self.feed.has_next():
-            self.feed.reset()
-            if self.randomize:
-                episode_num = 0
-                while episode_num < randrange(self.num_episodes):
-                    ts = self.feed.next()["external"]["timestamp"]
-                    if ts.time() == self.stop_time:
-                        episode_num += 1
+        
+        
+        # fast-forward episode to its end (if agent is done before episode's end) + reset feed if finished
+        while True:
+            
+            if (self.feed.has_next()):
+                ts = self.feed.next()["external"]
+                if (ts["timestamp"].time() == self.stop_time):
+                    if not (self.feed.has_next()):      # make sure its not the last ts of the df
+                        self.feed.reset()
+                    break
+            
+            else:
+                self.feed.reset()    
+                break
+        
+        # if self.randomize or not self.feed.has_next():
+        #     self.feed.reset()
+        #     if self.randomize:
+        #         episode_num = 0
+        #         while episode_num < randrange(self.num_episodes):
+        #             ts = self.feed.next()["external"]["timestamp"]
+        #             if ts.time() == self.stop_time:
+        #                 episode_num += 1
 
         self.warmup()
 
